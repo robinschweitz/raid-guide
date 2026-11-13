@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lichkönig 25 NH Aufgaben</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Marcellus&display=swap" rel="stylesheet">
+<style>
+/* Layout: eine Spalte, oben Umschalter Spieler/Raidleiter, darunter Karten pro Aufgabe in Kampfreihenfolge. */
+:root{
+  --bg:#edf1f4; --surface:#ffffff; --ink:#15212b; --muted:#566775; --line:#d2dbe2; --accent:#1c6a96;
+  --ok:#2b7a4c; --test:#9a6100; --no:#a5303a; --soft:#e3eaef;
+  --display:"Marcellus",Georgia,serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0d141a; --surface:#16202a; --ink:#e3ebf0; --muted:#8fa1af; --line:#263541; --accent:#6dc2ea;
+    --ok:#62c48c; --test:#e2ab4d; --no:#ee747c; --soft:#1d2a35; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0d141a; --surface:#16202a; --ink:#e3ebf0; --muted:#8fa1af; --line:#263541; --accent:#6dc2ea;
+  --ok:#62c48c; --test:#e2ab4d; --no:#ee747c; --soft:#1d2a35; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.5 var(--body)}
+main{max-width:720px;margin:0 auto;padding:20px 16px 48px;display:flex;flex-direction:column;gap:20px}
+h1{font:400 28px/1.15 var(--display);margin:0;text-wrap:balance}
+h2{font:400 20px/1.2 var(--display);margin:0;text-wrap:balance}
+h3{font:600 13px/1.3 var(--body);margin:0;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+p{margin:0}
+.sub{color:var(--muted);font-size:14px}
+header{display:flex;flex-direction:column;gap:6px}
+.tabs{display:flex;gap:4px;background:var(--soft);padding:4px;border-radius:10px}
+.tabs a{flex:1;text-align:center;font-size:14px;padding:9px 4px;border-radius:7px;text-decoration:none;color:var(--muted);font-weight:500}
+.tabs a[aria-current="page"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:500 14px/1 var(--body);padding:9px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.chip[aria-pressed="true"]{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.dot{width:10px;height:10px;border-radius:50%;border:1px solid rgba(0,0,0,.35);flex:none}
+.group{display:flex;flex-direction:column;gap:8px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.eyebrow{font:600 12px/1 var(--body);color:var(--accent);text-transform:uppercase;letter-spacing:.08em}
+.why{color:var(--muted);font-size:15px}
+.hint{font-size:14px;padding:10px 12px;border-radius:8px;background:var(--soft)}
+.hint.warn{border-left:3px solid var(--test)}
+ul.todo{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.clip{font-size:13px;color:var(--muted);border:1px dashed var(--line);border-radius:8px;padding:8px 10px}
+ul.abil{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+ul.abil li{border-left:3px solid var(--line);padding:2px 0 2px 10px;display:flex;flex-direction:column;gap:2px}
+ul.abil li.ok{border-color:var(--ok)} ul.abil li.test{border-color:var(--test)} ul.abil li.no{border-color:var(--no)}
+.row{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}
+.name{font-weight:600}
+.en{color:var(--muted);font-size:13px}
+.meta{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+.badge{font:600 11px/1 var(--body);padding:4px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.04em;border:1px solid currentColor}
+.badge.ok{color:var(--ok)} .badge.test{color:var(--test)} .badge.no{color:var(--no)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:13px;color:var(--muted);align-items:center}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+select,input[type=text]{font:400 16px/1.2 var(--body);padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);min-width:0}
+.form{display:flex;flex-wrap:wrap;gap:8px}
+.form > *{flex:1 1 130px}
+button.act{font:600 15px/1 var(--body);padding:11px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer;flex:0 0 auto}
+button.ghost{background:transparent;color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.roster{display:flex;flex-wrap:wrap;gap:6px}
+.member{font-size:13px;padding:5px 4px 5px 9px;border-radius:999px;border:1px solid var(--line);background:var(--surface);display:inline-flex;align-items:center;gap:6px}
+.member button{border:0;background:none;color:var(--muted);font-size:16px;line-height:1;cursor:pointer;padding:2px 6px}
+pre{margin:0;white-space:pre-wrap;word-break:break-word;font:400 14px/1.5 ui-monospace,Menlo,Consolas,monospace;background:var(--soft);padding:12px;border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td{padding:7px 4px;border-top:1px solid var(--line);vertical-align:top}
+td:first-child{font-weight:600;white-space:nowrap;padding-right:10px}
+footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line);padding-top:16px}
+footer a{color:var(--accent)}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Der Lichkönig, 25 Spieler normal</h1>
+  <p class="sub">Prototyp für Rising Gods. Welche Fähigkeit löst welche Aufgabe im Kampf?</p>
+</header>
+
+<nav class="tabs" aria-label="Ansicht">
+  <a href="#ablauf" id="tab-ablauf">Ablauf</a>
+  <a href="#spieler" id="tab-spieler">Meine Aufgaben</a>
+  <a href="#raidleiter" id="tab-raidleiter">Einteilung</a>
+</nav>
+
+<div class="legend" id="legend" aria-label="Legende">
+  <span><b class="badge ok">Erwartet</b> sollte laut Spielmechanik wirken</span>
+  <span><b class="badge test">Testen</b> auf Rising Gods prüfen</span>
+  <span><b class="badge no">Wirkt nicht</b></span>
+</div>
+
+<section id="view-ablauf" class="group" style="gap:20px">
+  <div class="group">
+    <h3>Rolle</h3>
+    <div class="chips" id="role-chips"></div>
+  </div>
+  <div id="phase-list" class="group" style="gap:14px"></div>
+</section>
+
+<section id="view-spieler" class="group" style="gap:20px" hidden>
+  <div class="group">
+    <h3>Klasse</h3>
+    <div class="chips" id="class-chips"></div>
+  </div>
+  <div class="group">
+    <h3>Spezialisierung</h3>
+    <div class="chips" id="spec-chips"></div>
+  </div>
+  <div id="task-list" class="group" style="gap:14px"></div>
+</section>
+
+<section id="view-raidleiter" class="group" style="gap:20px" hidden>
+  <div class="card">
+    <h2>Raid</h2>
+    <p class="sub" id="roster-info"></p>
+    <div class="roster" id="roster"></div>
+    <div class="form">
+      <input type="text" id="add-name" placeholder="Name" maxlength="20" aria-label="Name">
+      <select id="add-class" aria-label="Klasse"></select>
+      <select id="add-spec" aria-label="Spezialisierung"></select>
+      <button class="act" id="add-btn" type="button">Hinzufügen</button>
+    </div>
+    <div class="form">
+      <button class="act ghost" id="reset-btn" type="button">Beispielraid laden</button>
+      <button class="act ghost" id="clear-btn" type="button">Raid leeren</button>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Aufgabe einteilen</h2>
+    <select id="plan-task" aria-label="Aufgabe"></select>
+    <p class="sub" id="plan-summary"></p>
+    <table id="plan-table"></table>
+    <h3>Text für den Raidchat</h3>
+    <pre id="plan-text"></pre>
+    <div class="form"><button class="act" id="copy-btn" type="button">Text kopieren</button></div>
+    <p class="sub">Abklingzeiten ohne Talente und Glyphen gerechnet. Der Vorschlag verteilt die längsten Effekte zuerst.</p>
+  </div>
+</section>
+
+<footer>
+  <p><b>Stand der Daten:</b> erster Entwurf aus allgemeinem Wissen über Patch 3.3.5 und öffentlichen Guides. Nichts davon ist bisher auf Rising Gods im Spiel bestätigt. Rising Gods nutzt einen eigenen Core, einzelne Immunitäten können abweichen.</p>
+  <p>Quellen für die Mechaniken: <a href="https://warcraft.wiki.gg/wiki/Lich_King_(tactics)">Warcraft Wiki, Lich King (tactics)</a>, <a href="https://warcraft.wiki.gg/wiki/Val%27kyr_Shadowguard">Val'kyr Shadowguard</a>, <a href="https://warcrafttavern.com/wotlk/guides/the-lich-king">Warcraft Tavern</a>.</p>
+</footer>
+</main>
+
+<script>
+const CLASSES = {
+  paladin:{n:'Paladin',col:'#F58CBA',specs:{holy:'Heilig',prot:'Schutz',ret:'Vergeltung'}},
+  warrior:{n:'Krieger',col:'#C79C6E',specs:{arms:'Waffen',fury:'Furor',prot:'Schutz'}},
+  dk:{n:'Todesritter',col:'#C41F3B',specs:{blood:'Blut',frost:'Frost',unholy:'Unheilig'}},
+  druid:{n:'Druide',col:'#FF7D0A',specs:{balance:'Gleichgewicht',cat:'Katze',bear:'Bär',resto:'Wiederherstellung'}},
+  hunter:{n:'Jäger',col:'#ABD473',specs:{bm:'Tierherrschaft',mm:'Treffsicherheit',sv:'Überleben'}},
+  mage:{n:'Magier',col:'#69CCF0',specs:{arcane:'Arkan',fire:'Feuer',frost:'Frost'}},
+  warlock:{n:'Hexenmeister',col:'#9482C9',specs:{affli:'Gebrechen',demo:'Dämonologie',destro:'Zerstörung'}},
+  priest:{n:'Priester',col:'#FFFFFF',specs:{disc:'Disziplin',holy:'Heilig',shadow:'Schatten'}},
+  shaman:{n:'Schamane',col:'#0070DE',specs:{ele:'Elementar',enh:'Verstärkung',resto:'Wiederherstellung'}},
+  rogue:{n:'Schurke',col:'#FFF569',specs:{assa:'Meucheln',combat:'Kampf',sub:'Täuschung'}}
+};
+
+const TASKS = [
+  {id:'horror-enrage',phase:'Phase 1',title:'Wutanfall der Schlurfenden Schrecken entfernen',
+   why:'Im Wutanfall schlägt der Schrecken so hart zu, dass der Tank schnell stirbt.',
+   eff:{enrage:'ok'},fallback:'Dafür hast du nichts. Steh nie vor dem Schrecken, seine Schockwelle trifft nach vorn.'},
+  {id:'plague',phase:'Phase 1',title:'Nekrotische Seuche dispellen',
+   why:'Beim Dispellen springt die Seuche auf das nächste Ziel in der Nähe. Sie soll auf die Adds springen, nicht in den Raid.',
+   warn:'Nur dispellen, wenn du eingeteilt bist und der Spieler bei den Adds steht.',
+   eff:{disease:'ok'},fallback:'Du kannst keine Krankheiten entfernen. Hast du die Seuche, lauf zu den Adds beim zweiten Tank und warte dort auf den Dispel.'},
+  {id:'shriek',phase:'Übergang',title:'Stille vom Seelenkreischen dispellen',
+   why:'Der Tobende Geist bringt alle vor sich für 5 Sekunden zum Schweigen. Ein stummer Heiler heilt nicht.',
+   warn:'Wer selbst stumm ist, kann sich nicht selbst dispellen.',
+   eff:{magic:'ok'},fallback:'Du kannst keine Magie von Mitspielern entfernen. Steh nie vor einem Tobenden Geist.'},
+  {id:'valk-stun',phase:'Phase 2',title:"Val'kyr betäuben",
+   why:"Jede Val'kyr trägt einen Spieler zur Kante und lässt ihn fallen. Betäubt bleibt sie stehen, und der Raid hat Zeit, sie zu töten.",
+   eff:{stun:'ok'},targets:['Totenkopf','Kreuz','Quadrat'],interval:45,
+   fallback:"Du hast keinen Stun. Verlangsame die Val'kyr und mach Schaden."},
+  {id:'valk-slow',phase:'Phase 2',title:"Val'kyr verlangsamen",
+   why:"Zwischen den Stuns fliegt die Val'kyr weiter. Jeder Slow verlängert die Zeit bis zur Kante.",
+   warn:'Slows stapeln sich nicht. Es zählt nur der stärkste.',
+   eff:{slow:'ok'},fallback:"Du hast keinen Slow. Mach Schaden auf die markierte Val'kyr."},
+  {id:'spirits',phase:'Phase 3',title:'Widerwärtige Geister aufhalten',
+   why:'Zehn Geister schweben 30 Sekunden über dem Boss, fliegen dann auf Spieler zu und explodieren bei Berührung.',
+   eff:{slow:'test'},aoeFirst:true,
+   fallback:'Du hast keinen Slow. Halte Abstand zu anderen, damit eine Explosion nur dich trifft.'},
+  {id:'warden',phase:'Phase 3, in Frostgram',title:'Seelenriss des Geisterwächters unterbrechen',
+   why:'Ein Spieler wird in Frostgram gezogen. Dort kanalisiert der Geisterwächter Seelenriss auf Terenas. Stirbt Terenas, stirbst du, und der Lichkönig wird stärker.',
+   eff:{interrupt:'ok',stun:'test'},
+   fallback:'Du hast keinen Unterbrecher. Heile Terenas oder mach Schaden auf den Wächter.'},
+  {id:'terenas',phase:'Phase 3, in Frostgram',title:'Seelenriss von Terenas dispellen',
+   why:'Seelenriss liegt als Magie-Effekt auf Terenas und lässt sich entfernen. Das ist der Ausweg für alle ohne Unterbrecher.',
+   eff:{magic:'ok'},fallback:'Du kannst keine Magie entfernen. Unterbrich den Wächter oder heile Terenas.'}
+];
+
+// c Klasse, n Name, en englisch, e Effekt, s Specs (null = alle), cd, dur, note, st Status, aoe, tasks (nur diese Aufgaben)
+const A = [
+  // Stun
+  {c:'paladin',n:'Hammer der Gerechtigkeit',en:'Hammer of Justice',e:'stun',s:null,cd:60,dur:6,note:'10 m Reichweite. Mit Talenten kürzere Abklingzeit.',st:'ok'},
+  {c:'paladin',n:'Heiliger Zorn',en:'Holy Wrath',e:'stun',s:null,cd:30,dur:3,note:'Trifft nur Untote und Dämonen, Flächeneffekt um dich herum.',st:'test'},
+  {c:'paladin',n:'Buße',en:'Repentance',e:'stun',s:['ret'],note:'Bricht beim ersten Schaden.',st:'no'},
+  {c:'warrior',n:'Schockwelle',en:'Shockwave',e:'stun',s:['prot'],cd:20,dur:4,note:'Kegel vor dir, kann mehrere Ziele treffen.',st:'ok'},
+  {c:'warrior',n:'Erschütternder Schlag',en:'Concussion Blow',e:'stun',s:['prot'],cd:30,dur:5,st:'ok'},
+  {c:'warrior',n:'Abfangen',en:'Intercept',e:'stun',s:['arms','fury'],cd:30,dur:3,note:'Berserkerhaltung, 8 bis 25 m Abstand nötig.',st:'ok'},
+  {c:'dk',n:'Nagen (Ghul)',en:'Gnaw',e:'stun',s:['unholy'],cd:60,dur:3,note:'Fähigkeit des Ghuls, am besten per Makro.',st:'ok'},
+  {c:'dk',n:'Todesgriff',en:'Death Grip',tasks:['valk-stun','valk-slow'],s:null,note:"Val'kyr sind dagegen immun.",st:'no'},
+  {c:'dk',n:'Zehrende Kälte',en:'Hungering Cold',e:'stun',s:['frost'],note:'Bricht beim ersten Schaden.',st:'no'},
+  {c:'druid',n:'Hieb',en:'Bash',e:'stun',s:['bear'],cd:60,dur:4,st:'ok'},
+  {c:'druid',n:'Zermalmen',en:'Maim',e:'stun',s:['cat'],cd:10,dur:5,note:'Braucht Combopunkte, Dauer je nach Punkten.',st:'ok'},
+  {c:'druid',n:'Wirbelsturm',en:'Cyclone',tasks:['valk-stun'],s:null,note:'Macht das Ziel immun gegen Schaden.',st:'no'},
+  {c:'hunter',n:'Einschüchterung',en:'Intimidation',e:'stun',s:['bm'],cd:60,dur:3,note:'Dein Begleiter muss am Ziel sein.',st:'ok'},
+  {c:'mage',n:'Tieffrieren',en:'Deep Freeze',e:'stun',s:['frost'],cd:30,dur:5,note:'Nur auf eingefrorene Ziele oder mit Eisige Finger.',st:'test'},
+  {c:'warlock',n:'Schattenfuror',en:'Shadowfury',e:'stun',s:['destro'],cd:20,dur:3,note:'30 m Reichweite, Flächeneffekt.',st:'ok'},
+  {c:'warlock',n:'Abfangen (Teufelswache)',en:'Intercept',e:'stun',s:['demo'],cd:30,dur:3,st:'test'},
+  {c:'rogue',n:'Nierenhieb',en:'Kidney Shot',e:'stun',s:null,cd:20,dur:6,note:'Braucht Combopunkte, 6 s bei 5 Punkten.',st:'ok'},
+  {c:'rogue',n:'Solarplexus',en:'Gouge',e:'stun',s:null,note:'Bricht beim ersten Schaden.',st:'no'},
+  // Slow
+  {c:'warrior',n:'Kniesehne',en:'Hamstring',e:'slow',s:null,st:'ok'},
+  {c:'warrior',n:'Durchdringendes Heulen',en:'Piercing Howl',e:'slow',s:['fury'],aoe:true,note:'Talent, Flächeneffekt um dich herum.',st:'ok'},
+  {c:'dk',n:'Eisketten',en:'Chains of Ice',e:'slow',s:null,note:'20 m Reichweite, anfangs sehr starker Slow.',st:'ok'},
+  {c:'dk',n:'Entweihung',en:'Desecration',e:'slow',s:['unholy'],aoe:true,note:'Passiv durch Talent.',st:'ok'},
+  {c:'druid',n:'Infizierte Wunden',en:'Infected Wounds',e:'slow',s:['cat','bear'],note:'Passiv durch Talent.',st:'ok'},
+  {c:'druid',n:'Taifun',en:'Typhoon',e:'slow',s:['balance'],aoe:true,cd:20,note:'Macht benommen. Ob der Rückstoß wirkt, ist offen.',st:'test'},
+  {c:'hunter',n:'Erschütternder Schuss',en:'Concussive Shot',e:'slow',s:null,cd:12,st:'ok'},
+  {c:'hunter',n:'Frostfalle',en:'Frost Trap',e:'slow',s:null,aoe:true,cd:30,note:'Fläche am Boden. Vorher in den Laufweg legen.',st:'ok'},
+  {c:'mage',n:'Verlangsamen',en:'Slow',e:'slow',s:['arcane'],st:'ok'},
+  {c:'mage',n:'Frostblitz',en:'Frostbolt',e:'slow',s:null,st:'ok'},
+  {c:'mage',n:'Kältekegel',en:'Cone of Cold',e:'slow',s:null,aoe:true,cd:10,st:'ok'},
+  {c:'warlock',n:'Fluch der Erschöpfung',en:'Curse of Exhaustion',e:'slow',s:['affli'],note:'Talent. Ersetzt deinen anderen Fluch auf dem Ziel.',st:'ok'},
+  {c:'priest',n:'Gedankenschinden',en:'Mind Flay',e:'slow',s:['shadow'],st:'ok'},
+  {c:'shaman',n:'Totem der Erdbindung',en:'Earthbind Totem',e:'slow',s:null,aoe:true,cd:15,note:'Wirkt im Umkreis des Totems.',st:'ok'},
+  {c:'shaman',n:'Frostschock',en:'Frost Shock',e:'slow',s:null,cd:6,st:'ok'},
+  {c:'rogue',n:'Verkrüppelndes Gift',en:'Crippling Poison',e:'slow',s:null,st:'ok'},
+  // Unterbrechen
+  {c:'rogue',n:'Tritt',en:'Kick',e:'interrupt',s:null,cd:10,st:'ok'},
+  {c:'warrior',n:'Zuschlagen',en:'Pummel',e:'interrupt',s:['arms','fury'],cd:10,note:'Berserkerhaltung.',st:'ok'},
+  {c:'warrior',n:'Schildhieb',en:'Shield Bash',e:'interrupt',s:['prot'],cd:12,st:'ok'},
+  {c:'dk',n:'Gedankenfrost',en:'Mind Freeze',e:'interrupt',s:null,cd:10,st:'ok'},
+  {c:'dk',n:'Strangulieren',en:'Strangulate',e:'interrupt',s:null,cd:120,note:'Stille, als Reserve.',st:'ok'},
+  {c:'druid',n:'Wilde Attacke (Bär)',en:'Feral Charge',e:'interrupt',s:['bear'],cd:15,note:'8 bis 25 m Abstand nötig.',st:'ok'},
+  {c:'hunter',n:'Unterdrückender Schuss',en:'Silencing Shot',e:'interrupt',s:['mm'],cd:20,st:'ok'},
+  {c:'mage',n:'Gegenzauber',en:'Counterspell',e:'interrupt',s:null,cd:24,st:'ok'},
+  {c:'warlock',n:'Zaubersperre (Teufelsjäger)',en:'Spell Lock',e:'interrupt',s:null,cd:24,note:'Nur wenn dein Begleiter mit in Frostgram ist.',st:'test'},
+  {c:'priest',n:'Stille',en:'Silence',e:'interrupt',s:['shadow'],cd:45,st:'ok'},
+  {c:'shaman',n:'Windstoß',en:'Wind Shear',e:'interrupt',s:null,cd:6,st:'ok'},
+  {c:'paladin',n:'Schild des Rächers',en:"Avenger's Shield",e:'interrupt',s:['prot'],cd:30,note:'Stille nur mit Talent.',st:'test'},
+  // Magie von Verbündeten entfernen
+  {c:'priest',n:'Magiebannung',en:'Dispel Magic',e:'magic',s:null,st:'ok'},
+  {c:'priest',n:'Massenbannung',en:'Mass Dispel',e:'magic',s:null,aoe:true,note:'Für mehrere Stumme auf einmal.',st:'ok'},
+  {c:'paladin',n:'Reinigung des Glaubens',en:'Cleanse',e:'magic',s:null,st:'ok'},
+  {c:'warlock',n:'Magie verschlingen (Teufelsjäger)',en:'Devour Magic',e:'magic',s:null,st:'test'},
+  // Krankheit
+  {c:'priest',n:'Krankheit aufheben',en:'Abolish Disease',e:'disease',s:null,st:'ok'},
+  {c:'paladin',n:'Reinigung des Glaubens',en:'Cleanse',e:'disease',s:null,st:'ok'},
+  {c:'shaman',n:'Toxine heilen',en:'Cure Toxins',e:'disease',s:null,note:'Als Wiederhersteller mit Talent: Geist reinigen.',st:'ok'},
+  // Wutanfall
+  {c:'hunter',n:'Einlullender Schuss',en:'Tranquilizing Shot',e:'enrage',s:null,cd:8,st:'ok'},
+  {c:'rogue',n:'Beruhigendes Gift',en:'Anesthetic Poison',e:'enrage',s:null,note:'Wirkt per Zufall. Mit Tückische Klinge gezielt auslösbar.',st:'test'}
+];
+
+const ROLES = {tank:'Tank',heal:'Heiler',melee:'Nahkampf',ranged:'Fernkampf'};
+const PHASES = [
+  {name:'Phase 1',range:'100 bis 70 %',
+   sum:'Der Lichkönig ruft Ghule und Schlurfende Schrecken. Ein Spieler bekommt die Nekrotische Seuche, die beim Dispellen weiterspringt. Befallen (Infest) trifft den ganzen Raid und endet erst, wenn ein Spieler über 90 % Leben hat.',
+   clips:['Seuche auf die Adds springen lassen','Schockwelle des Schreckens'],
+   r:{tank:['Ein Tank hält den Boss, der zweite sammelt alle Schrecken und Ghule.','Schrecken immer vom Raid wegdrehen. Seine Schockwelle trifft alles vor ihm.','Adds nah beieinander halten, damit die Seuche zwischen ihnen springen kann.','Wutanfall des Schreckens ansagen, falls er nicht entfernt wird, und Cooldown ziehen.'],
+      heal:['Nach Befallen jeden Spieler schnell über 90 % heilen. Vorher tickt der Schaden immer stärker.','Seuche nur dispellen, wenn du eingeteilt bist und der Spieler bei den Adds steht.','Der Add-Tank bekommt im Wutanfall sehr viel Schaden.'],
+      melee:['Schaden auf den Boss, nie vor einem Schrecken stehen.','Mit der Seuche sofort zu den Adds laufen und dort stehen bleiben.','Die Adds sterben durch die Seuche. Nur auf Ansage selbst töten.'],
+      ranged:['Schaden auf den Boss.','Mit der Seuche sofort zu den Adds laufen und dort stehen bleiben.','Jäger entfernen den Wutanfall des Schreckens.']}},
+  {name:'Übergang',range:'bei 70 % und 40 %, je 60 Sekunden',
+   sum:'Der Boss wirkt in der Mitte Unbarmherziger Winter. Alle laufen an den Rand. Eissphären schweben auf Spieler zu und stoßen sie von der Plattform. Tobende Geister erscheinen bei Spielern. Am Ende bricht mit Beben der Rand ab, vorher müssen alle zurück in die Mitte.',
+   clips:['Laufweg an den Rand und zurück','Tobenden Geist wegdrehen','Eissphäre töten'],
+   r:{tank:['Jeden Tobenden Geist sofort abholen und vom Raid wegdrehen. Seelenkreischen ist ein Kegel nach vorn und macht stumm.','Geister nah zusammenziehen, damit der Raid sie gemeinsam tötet.','Rechtzeitig vor dem Beben mit den restlichen Geistern in die Mitte laufen.'],
+      heal:['Nie vor einem Tobenden Geist stehen.','Stille vom Seelenkreischen dispellen.','Der Tank mit mehreren Geistern braucht durchgehend Heilung.'],
+      melee:['Alle auf die Tobenden Geister, von hinten.','Erscheint ein Geist bei dir: stehen bleiben, bis der Tank ihn hat.','Vor dem Beben zurück in die Mitte.'],
+      ranged:['Eissphären haben Vorrang. Sie müssen sterben, bevor sie einen Spieler erreichen.','Danach Schaden auf die Tobenden Geister.','Vor dem Beben zurück in die Mitte.']}},
+  {name:'Phase 2',range:'70 bis 40 %',
+   sum:"Val'kyr greifen Spieler und tragen sie zur Kante. Entweihen (Defile) legt eine Fläche unter einen Spieler, die mit jedem Treffer wächst. Seelenschnitter (Soul Reaper) trifft den Tank nach 5 Sekunden sehr hart. Befallen bleibt.",
+   clips:["Val'kyr betäuben und töten",'Aus Entweihen laufen','Tankwechsel bei Seelenschnitter'],
+   r:{tank:['Seelenschnitter: Der zweite Tank spottet sofort ab. Der getroffene Tank zieht einen Cooldown, weil der Schaden 5 Sekunden später kommt.','Boss in der Mitte halten. So ist der Weg der Val\'kyr zur Kante am längsten.','Boss sofort aus Entweihen herausziehen.','Tanks mit Stun helfen bei den Val\'kyr, wenn sie gerade nicht am Boss sind.'],
+      heal:['Der Tank mit Seelenschnitter braucht nach 5 Sekunden volle Lebenspunkte.','Befallen kommt direkt nach den Val\'kyr. Raid vorher hochheilen.','Bei Entweihen auf dir: sofort raus und weg vom Raid.'],
+      melee:['Val\'kyr haben Vorrang vor allem. Markierung beachten, stunnen und töten.','Vor Entweihen locker verteilen, danach zum Sammelpunkt für die Val\'kyr.','Entweihen unter dir: sofort rauslaufen. Jeder Treffer vergrößert die Fläche.'],
+      ranged:['Val\'kyr haben Vorrang vor allem. Verlangsamen und töten.','Vor Entweihen locker verteilen, danach zum Sammelpunkt für die Val\'kyr.','Entweihen unter dir: sofort rauslaufen, weg vom Raid.']}},
+  {name:'Phase 3',range:'40 bis 10 %',
+   sum:'Zehn Widerwärtige Geister erscheinen über dem Boss und fliegen nach 30 Sekunden auf Spieler zu. Seele ernten (Harvest Soul) macht einem Spieler 6 Sekunden lang hohen Schaden und zieht ihn danach in Frostgram. Entweihen und Seelenschnitter bleiben. Bei 10 % ist der Kampf gewonnen.',
+   clips:['Geister töten, bevor sie ankommen','Im Inneren von Frostgram','Boss aus Entweihen ziehen'],
+   r:{tank:['Seelenschnitter-Wechsel wie in Phase 2.','Boss von den Geistern wegziehen, damit sie nicht im Nahkampf explodieren.','Boss sofort aus Entweihen herausziehen.','In Frostgram: Wächter unterbrechen und Schaden machen.'],
+      heal:['Das Ziel von Seele ernten sofort hochheilen. Der Schaden ist sehr hoch.','In Frostgram: Terenas heilen und Seelenriss dispellen.','Entweihen und Seelenschnitter wie in Phase 2.'],
+      melee:['In Frostgram: Seelenriss des Wächters unterbrechen und Schaden machen.','Weg vom Boss, wenn die Geister herunterkommen.','Entweihen unter dir: sofort rauslaufen.'],
+      ranged:['Geister mit Flächenschaden töten, solange sie noch schweben.','Abstand zu anderen halten, wenn ein Geist auf dich zufliegt.','In Frostgram: Wächter unterbrechen oder Terenas helfen.']}}
+];
+var role = load('lk-role','tank'); if(!ROLES[role]) role='tank';
+
+const EXAMPLE = [
+  ['Tharion','paladin','prot'],['Brakka','warrior','prot'],
+  ['Elyra','paladin','holy'],['Mendis','priest','disc'],['Sorya','priest','holy'],['Tuunka','shaman','resto'],['Fenwyn','druid','resto'],['Halvar','paladin','holy'],
+  ['Kaldric','paladin','ret'],['Vexa','rogue','combat'],['Nix','rogue','assa'],['Gorrim','warrior','fury'],['Mordan','dk','unholy'],['Ysolde','dk','frost'],
+  ['Rakash','druid','cat'],['Stormhuf','shaman','enh'],['Lyssa','hunter','mm'],['Dorn','hunter','sv'],['Ilvane','mage','arcane'],['Pyra','mage','fire'],
+  ['Zelkor','warlock','destro'],['Malvia','warlock','affli'],['Umbra','priest','shadow'],['Lunara','druid','balance'],['Volt','shaman','ele']
+].map(function(r){return {name:r[0],c:r[1],s:r[2]};});
+
+const RANK = {ok:0,test:1,no:2};
+const LABEL = {ok:'Erwartet',test:'Testen',no:'Wirkt nicht'};
+const $ = function(id){return document.getElementById(id);};
+function esc(s){return String(s).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m];});}
+function load(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+
+var state = load('lk-player',{c:'paladin',s:'ret'});
+if(!CLASSES[state.c]||!CLASSES[state.c].specs[state.s]) state={c:'paladin',s:'ret'};
+var roster = load('lk-roster',null);
+var rosterIsExample = !roster;
+if(!Array.isArray(roster)) roster = EXAMPLE.slice();
+
+// Alle Fähigkeiten einer Klasse/Spec für eine Aufgabe, mit zusammengeführtem Status
+function abilitiesFor(task,c,s){
+  var out=[];
+  A.forEach(function(a){
+    if(a.c!==c) return;
+    if(a.s && a.s.indexOf(s)<0) return;
+    var match = a.tasks ? a.tasks.indexOf(task.id)>=0 : (a.e in task.eff);
+    if(!match) return;
+    var ts = a.tasks ? 'ok' : task.eff[a.e];
+    var st = RANK[a.st]>=RANK[ts] ? a.st : ts;
+    out.push({a:a,st:st});
+  });
+  out.sort(function(x,y){
+    if(RANK[x.st]!==RANK[y.st]) return RANK[x.st]-RANK[y.st];
+    if(task.aoeFirst && !!x.a.aoe!==!!y.a.aoe) return x.a.aoe?-1:1;
+    return (y.a.dur||0)-(x.a.dur||0);
+  });
+  return out;
+}
+function metaOf(a){
+  var m=[];
+  if(a.cd) m.push('Abklingzeit '+(a.cd>=120?(a.cd/60)+' min':a.cd+' s'));
+  if(a.dur) m.push('Dauer '+a.dur+' s');
+  if(a.aoe) m.push('Fläche');
+  return m.join(' · ');
+}
+
+function renderPlayer(){
+  $('class-chips').innerHTML = Object.keys(CLASSES).map(function(k){
+    var c=CLASSES[k];
+    return '<button type="button" class="chip" data-c="'+k+'" aria-pressed="'+(k===state.c)+'"><span class="dot" style="background:'+c.col+'"></span>'+c.n+'</button>';
+  }).join('');
+  var specs=CLASSES[state.c].specs;
+  $('spec-chips').innerHTML = Object.keys(specs).map(function(k){
+    return '<button type="button" class="chip" data-s="'+k+'" aria-pressed="'+(k===state.s)+'">'+specs[k]+'</button>';
+  }).join('');
+  $('task-list').innerHTML = TASKS.map(function(t){
+    var list=abilitiesFor(t,state.c,state.s);
+    var works=list.filter(function(x){return x.st!=='no';});
+    var h='<article class="card"><span class="eyebrow">'+esc(t.phase)+'</span><h2>'+esc(t.title)+'</h2><p class="why">'+esc(t.why)+'</p>';
+    if(t.warn) h+='<p class="hint warn">'+esc(t.warn)+'</p>';
+    if(!works.length) h+='<p class="hint">'+esc(t.fallback)+'</p>';
+    if(list.length){
+      h+='<ul class="abil">'+list.map(function(x){
+        var a=x.a, note=a.note||'';
+        if(t.id==='warden' && a.e==='stun' && x.st!=='no') note=(note?note+' ':'')+'Hilft nur, wenn der Wächter betäubbar ist.';
+        var meta=metaOf(a);
+        return '<li class="'+x.st+'"><div class="row"><span class="name">'+esc(a.n)+'</span><span class="en">'+esc(a.en)+'</span><b class="badge '+x.st+'">'+LABEL[x.st]+'</b></div>'+
+          (meta?'<div class="meta">'+meta+'</div>':'')+(note?'<div class="sub">'+esc(note)+'</div>':'')+'</li>';
+      }).join('')+'</ul>';
+    }
+    return h+'</article>';
+  }).join('');
+}
+
+function renderFlow(){
+  $('role-chips').innerHTML = Object.keys(ROLES).map(function(k){
+    return '<button type="button" class="chip" data-r="'+k+'" aria-pressed="'+(k===role)+'">'+ROLES[k]+'</button>';
+  }).join('');
+  $('phase-list').innerHTML = PHASES.map(function(p){
+    return '<article class="card"><span class="eyebrow">'+esc(p.name)+' · '+esc(p.range)+'</span><p>'+esc(p.sum)+'</p>'+
+      '<h3>Als '+ROLES[role]+'</h3><ul class="todo">'+p.r[role].map(function(x){return '<li>'+esc(x)+'</li>';}).join('')+'</ul>'+
+      '<p class="clip">Geplante Clips: '+p.clips.map(esc).join(' · ')+'</p></article>';
+  }).join('') + '<p class="sub">Nach 15 Minuten geht der Boss in den Berserker.</p>';
+}
+
+function bestFor(p,task,maxCd){
+  var l=abilitiesFor(task,p.c,p.s).filter(function(x){return x.st!=='no' && (maxCd==null || (x.a.cd||0)<=maxCd);});
+  return l.length?l[0]:null;
+}
+function tag(x){return x.a.n+(x.st==='test'?' (testen)':'');}
+
+function renderRoster(){
+  $('roster-info').textContent = roster.length+' Spieler'+(rosterIsExample?' · Beispielraid mit erfundenen Namen':'');
+  $('roster').innerHTML = roster.map(function(p,i){
+    var c=CLASSES[p.c];
+    return '<span class="member"><span class="dot" style="background:'+c.col+'"></span>'+esc(p.name)+' <span class="en">'+esc(c.specs[p.s])+'</span><button type="button" data-rm="'+i+'" aria-label="'+esc(p.name)+' entfernen">×</button></span>';
+  }).join('');
+}
+function renderPlan(){
+  var t=TASKS.filter(function(x){return x.id===$('plan-task').value;})[0]||TASKS[0];
+  var able=[];
+  roster.forEach(function(p){var b=bestFor(p,t,null); if(b) able.push({p:p,b:b});});
+  able.sort(function(x,y){return (RANK[x.b.st]-RANK[y.b.st]) || ((y.b.a.dur||0)-(x.b.a.dur||0));});
+  $('plan-summary').textContent = able.length+' von '+roster.length+' Spielern können das.';
+  $('plan-table').innerHTML = able.map(function(x){
+    var all=abilitiesFor(t,x.p.c,x.p.s).filter(function(y){return y.st!=='no';}).map(tag).join(', ');
+    return '<tr><td>'+esc(x.p.name)+'</td><td>'+esc(all)+'</td></tr>';
+  }).join('') || '<tr><td colspan="2">Niemand im Raid hat eine passende Fähigkeit.</td></tr>';
+  var lines=[];
+  if(t.targets){
+    var waves=[{label:'Welle 1, 3, 5',max:null},{label:'Welle 2, 4',max:t.interval}];
+    waves.forEach(function(w){
+      var pool=[];
+      roster.forEach(function(p){var b=bestFor(p,t,w.max); if(b) pool.push({p:p,b:b});});
+      pool.sort(function(x,y){return (y.b.a.dur||0)-(x.b.a.dur||0);});
+      lines.push(t.title+', '+w.label+':');
+      t.targets.forEach(function(mark,i){
+        var mine=pool.filter(function(_,j){return j%t.targets.length===i;});
+        lines.push(mark+': '+(mine.length?mine.map(function(x){return x.p.name+' ('+x.b.a.n+')';}).join(' > '):'niemand frei'));
+      });
+    });
+  } else {
+    lines.push(t.title+':');
+    lines.push(able.length?able.map(function(x){return x.p.name+' ('+x.b.a.n+')';}).join(', '):'niemand');
+  }
+  $('plan-text').textContent = lines.join('\n');
+}
+function renderRaid(){renderRoster();renderPlan();}
+
+function fillSpecs(){
+  var specs=CLASSES[$('add-class').value].specs;
+  $('add-spec').innerHTML=Object.keys(specs).map(function(k){return '<option value="'+k+'">'+specs[k]+'</option>';}).join('');
+}
+function route(){
+  var v = location.hash==='#raidleiter' ? 'raidleiter' : location.hash==='#spieler' ? 'spieler' : 'ablauf';
+  $('legend').hidden = v==='ablauf';
+  ['ablauf','spieler','raidleiter'].forEach(function(k){
+    $('view-'+k).hidden = k!==v;
+    if(k===v) $('tab-'+k).setAttribute('aria-current','page'); else $('tab-'+k).removeAttribute('aria-current');
+  });
+}
+
+$('role-chips').addEventListener('click',function(e){
+  var b=e.target.closest('[data-r]'); if(!b) return;
+  role=b.dataset.r; save('lk-role',role); renderFlow();
+});
+$('class-chips').addEventListener('click',function(e){
+  var b=e.target.closest('[data-c]'); if(!b) return;
+  state.c=b.dataset.c; state.s=Object.keys(CLASSES[state.c].specs)[0]; save('lk-player',state); renderPlayer();
+});
+$('spec-chips').addEventListener('click',function(e){
+  var b=e.target.closest('[data-s]'); if(!b) return;
+  state.s=b.dataset.s; save('lk-player',state); renderPlayer();
+});
+$('roster').addEventListener('click',function(e){
+  var b=e.target.closest('[data-rm]'); if(!b) return;
+  roster.splice(+b.dataset.rm,1); rosterIsExample=false; save('lk-roster',roster); renderRaid();
+});
+$('add-class').addEventListener('change',fillSpecs);
+$('add-btn').addEventListener('click',function(){
+  var name=$('add-name').value.trim(); if(!name){$('add-name').focus();return;}
+  roster.push({name:name,c:$('add-class').value,s:$('add-spec').value});
+  rosterIsExample=false; $('add-name').value=''; save('lk-roster',roster); renderRaid();
+});
+$('add-name').addEventListener('keydown',function(e){if(e.key==='Enter') $('add-btn').click();});
+$('reset-btn').addEventListener('click',function(){roster=EXAMPLE.slice();rosterIsExample=true;try{localStorage.removeItem('lk-roster');}catch(e){} renderRaid();});
+$('clear-btn').addEventListener('click',function(){roster=[];rosterIsExample=false;save('lk-roster',roster);renderRaid();});
+$('plan-task').addEventListener('change',renderPlan);
+$('copy-btn').addEventListener('click',function(){
+  var btn=this, txt=$('plan-text').textContent;
+  function done(ok){btn.textContent=ok?'Kopiert':'Text markiert, bitte selbst kopieren';setTimeout(function(){btn.textContent='Text kopieren';},2200);}
+  function fallback(){var r=document.createRange();r.selectNodeContents($('plan-text'));var s=getSelection();s.removeAllRanges();s.addRange(r);done(false);}
+  try{navigator.clipboard.writeText(txt).then(function(){done(true);},fallback);}catch(e){fallback();}
+});
+
+$('add-class').innerHTML=Object.keys(CLASSES).map(function(k){return '<option value="'+k+'">'+CLASSES[k].n+'</option>';}).join('');
+fillSpecs();
+$('plan-task').innerHTML=TASKS.map(function(t){return '<option value="'+t.id+'">'+esc(t.phase)+': '+esc(t.title)+'</option>';}).join('');
+$('plan-task').value='valk-stun';
+window.addEventListener('hashchange',route);
+route(); renderFlow(); renderPlayer(); renderRaid();
+</script>
+</body>
+</html>
